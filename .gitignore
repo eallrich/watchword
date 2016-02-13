@@ -1,0 +1,13 @@
+*.py[cod]
+*.swp
+
+# Virtualenv
+bin/
+include/
+lib/
+local/
+
+# Local files
+watchword.sqlite3
+ww/local.py
+
