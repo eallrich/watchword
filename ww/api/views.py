@@ -1,10 +1,13 @@
 import json
 
+from concurrent.futures import ThreadPoolExecutor
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils import timezone
 
 from ww.api.models import Watch, Ping
+
+executor = ThreadPoolExecutor(max_workers=2)
 
 def ping(r, watchword):
     try:
@@ -13,8 +16,13 @@ def ping(r, watchword):
         return HttpResponseBadRequest()
 
     watch.last_ping = timezone.now()
+    # We send flares on state changes
+    launch_flares = watch.state == 'alarm'
     watch.state = 'quiet'
     watch.save()
+
+    if launch_flares:
+        executor.submit(watch.fire_flares)
 
     ping = Ping(watch=watch)
     ping.method = r.META["REQUEST_METHOD"]
