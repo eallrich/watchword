@@ -75,6 +75,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 if os.path.exists(os.path.join(BASE_DIR, "ww/local.py")):
