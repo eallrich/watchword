@@ -10,5 +10,5 @@ local/
 # Local files
 watchword.sqlite3
 ww/local.py
-static/
+/static/
 

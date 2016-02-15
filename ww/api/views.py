@@ -1,6 +1,7 @@
 import json
 
 from concurrent.futures import ThreadPoolExecutor
+from django.contrib.auth.decorators import login_required
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils import timezone
@@ -61,3 +62,38 @@ def status(r, watchword):
     response = HttpResponse(json.dumps(data))
     response["Content-Type"] = "application/json"
     return response
+
+@login_required
+def watches_list(r):
+    columns = [
+        'Name',
+        'Last Ping',
+        'Cycle',
+        'Grace',
+        'Will Alarm',
+        'Word',
+        'Status',
+    ]
+    records = []
+    for watch in Watch.objects.filter(user=r.user):
+        records.append([
+            watch.name,
+            watch.last_ping.isoformat(),
+            # A hack to get human-friendly names for timedelta objects. Simply
+            # subtract the timedelta from now in order to let naturaltime
+            # create the words from a datetime object, then chop off the " ago"
+            # suffix at the end of the string to get the interesting portion.
+            naturaltime(timezone.now() - watch.cycle)[:-4],
+            naturaltime(timezone.now() - watch.grace)[:-4],
+            naturaltime(watch.alarm_threshold()),
+            watch.word,
+            watch.status(),
+        ])
+    data = {
+        'columns': columns,
+        'records': records,
+    }
+    response = HttpResponse(json.dumps(data))
+    response['Content-Type'] = 'application/json'
+    return response
+

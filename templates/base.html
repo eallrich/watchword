@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Watchword{% endblock %}</title>
+    {% load static %}
+    <!-- stylesheets -->
+    <link rel="stylesheet" href="{% static "frontend/bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "frontend/watchword.css" %}">
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Watchword</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#watches">Watches</a></li>
+            <li><a href="#flares">Flares</a></li>
+            <li><a href="#pings">Pings</a></li>
+            <li><a href="#launches">Launches</a></li>
+            {% if request.user.is_authenticated %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Menu <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#new_watch">Set up a new Watch</a></li>
+                <li><a href="#new_flare">Add a Flare</a></li>
+                <li><a href="#about">About Watchword</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Account</li>
+                <li><a href="#signout">Sign out</a></li>
+              </ul>
+            </li>
+            {% else %}
+            <li><a href="#signin">Sign in</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
+
+    <!-- scripts -->
+    <script type="text/javascript" src="{% static "frontend/jquery-2.1.4.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "frontend/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "frontend/loglevel-1.4.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "frontend/watchword.js" %}"></script>
+  </body>
+</html>
