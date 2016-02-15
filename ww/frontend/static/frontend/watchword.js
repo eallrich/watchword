@@ -43,6 +43,8 @@ function update_view() {
 function watches_list() {
     log.info("watches_list()");
     $('#navbar-watches').addClass('active');
+    $('#content-title').empty();
+    $('#content-title').append('Watches');
     $.getJSON('/api/watches/', function(data) {
         var table_columns = "<tr>";
         for(var column of data['columns']) {
@@ -77,6 +79,8 @@ function pings_list() {
     log.info("pings_list()");
     var MAX_FIELD_LENGTH = 50;
     $('#navbar-pings').addClass('active');
+    $('#content-title').empty();
+    $('#content-title').append('Pings');
     $.getJSON('/api/pings/', function(data) {
         var table_columns = "<tr>";
         for(var column of data['columns']) {
