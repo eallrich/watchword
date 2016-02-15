@@ -3,3 +3,7 @@ body {
     padding-top: 70px;
 }
 
+.active a {
+    outline: none;
+}
+

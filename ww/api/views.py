@@ -63,6 +63,7 @@ def status(r, watchword):
     response["Content-Type"] = "application/json"
     return response
 
+
 @login_required
 def watches_list(r):
     columns = [
@@ -88,6 +89,33 @@ def watches_list(r):
             naturaltime(watch.alarm_threshold()),
             watch.word,
             watch.status(),
+        ])
+    data = {
+        'columns': columns,
+        'records': records,
+    }
+    response = HttpResponse(json.dumps(data))
+    response['Content-Type'] = 'application/json'
+    return response
+
+
+@login_required
+def pings_list(r):
+    columns = [
+        'Received',
+        'Watch',
+        'Method',
+        'User Agent',
+        'Remote IP',
+    ]
+    records = []
+    for ping in Ping.objects.filter(watch__user=r.user).select_related('watch'):
+        records.append([
+            ping.created.isoformat(),
+            ping.watch.name,
+            ping.method,
+            ping.user_agent,
+            ping.remote_addr,
         ])
     data = {
         'columns': columns,
