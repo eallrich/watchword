@@ -76,7 +76,7 @@ def watches_list(r):
         'Status',
     ]
     records = []
-    for watch in Watch.objects.filter(user=r.user):
+    for watch in Watch.objects.filter(user=r.user).order_by('created'):
         records.append([
             watch.name,
             watch.last_ping.isoformat(),
@@ -109,7 +109,7 @@ def pings_list(r):
         'Remote IP',
     ]
     records = []
-    for ping in Ping.objects.filter(watch__user=r.user).select_related('watch'):
+    for ping in Ping.objects.filter(watch__user=r.user).select_related('watch').order_by('-created'):
         records.append([
             ping.created.isoformat(),
             ping.watch.name,
