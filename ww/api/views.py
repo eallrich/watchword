@@ -6,7 +6,7 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils import timezone
 
-from ww.api.models import Watch, Ping
+from ww.api.models import Watch, Ping, Flare, Launch
 
 executor = ThreadPoolExecutor(max_workers=2)
 
@@ -116,6 +116,61 @@ def pings_list(r):
             ping.method,
             ping.user_agent,
             ping.remote_addr,
+        ])
+    data = {
+        'columns': columns,
+        'records': records,
+    }
+    response = HttpResponse(json.dumps(data))
+    response['Content-Type'] = 'application/json'
+    return response
+
+
+@login_required
+def flares_list(r):
+    columns = [
+        'Mechanism',
+        'Config',
+        'Last Launched',
+        '# Watches',
+    ]
+    records = []
+    for flare in Flare.objects.filter(user=r.user).order_by('created'):
+        try:
+            last_launch = Launch.objects.filter(flare=flare).latest('created')
+            last_launch = naturaltime(last_launch.created)
+        except Launch.DoesNotExist:
+            last_launch = 'never'
+        records.append([
+            flare.signal,
+            flare.config,
+            last_launch,
+            flare.watch_set.count(),
+        ])
+    data = {
+        'columns': columns,
+        'records': records,
+    }
+    response = HttpResponse(json.dumps(data))
+    response['Content-Type'] = 'application/json'
+    return response
+
+
+@login_required
+def launches_list(r):
+    columns = [
+        'Launched',
+        'Flare',
+        'Watch',
+        'Trigger State',
+    ]
+    records = []
+    for launch in Launch.objects.filter(watch__user=r.user).order_by('-created'):
+        records.append([
+            launch.created.isoformat(),
+            launch.flare.__str__(),
+            launch.watch.name,
+            launch.trigger_state,
         ])
     data = {
         'columns': columns,
