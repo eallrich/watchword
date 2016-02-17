@@ -62,10 +62,16 @@ class Watch(Timestamped):
     __unicode__ = __str__
 
     def alert_threshold(self):
-        return self.last_ping + self.cycle
+        if self.last_ping:
+            return self.last_ping + self.cycle
+        else:
+            return None
 
     def alarm_threshold(self):
-        return self.alert_threshold() + self.grace
+        if self.last_ping:
+            return self.alert_threshold() + self.grace
+        else:
+            return None
 
     def status(self):
         if self.state in ("fresh", "sleep"):

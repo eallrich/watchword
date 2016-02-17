@@ -79,14 +79,14 @@ def watches_list(r):
     for watch in Watch.objects.filter(user=r.user).order_by('created'):
         records.append([
             watch.name,
-            watch.last_ping.isoformat(),
+            watch.last_ping.isoformat() if watch.last_ping else 'never',
             # A hack to get human-friendly names for timedelta objects. Simply
             # subtract the timedelta from now in order to let naturaltime
             # create the words from a datetime object, then chop off the " ago"
             # suffix at the end of the string to get the interesting portion.
             naturaltime(timezone.now() - watch.cycle)[:-4],
             naturaltime(timezone.now() - watch.grace)[:-4],
-            naturaltime(watch.alarm_threshold()),
+            naturaltime(watch.alarm_threshold()) if watch.last_ping else 'never',
             watch.word,
             watch.status(),
         ])
