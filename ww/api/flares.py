@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.mail import send_mail
+from raven.contrib.django.raven_compat.models import client as raven
 import requests
 
 
@@ -12,7 +13,11 @@ class Email(object):
             'from_email': from_email,
             'recipient_list': [flare.config,],
         }
-        return send_mail(**parameters)
+        try:
+            return send_mail(**parameters)
+        except:
+            raven.captureException("Failed to send email")
+            return 0 # the message was not successfully sent
 
 
 class Webhook(object):
@@ -28,7 +33,9 @@ class Webhook(object):
             r = requests.get(url, **options)
             return "Status: %d" % r.status_code
         except requests.exceptions.Timeout:
-            tmpl = "Connection timed out (limit of %d seconds)"
-            return tmpl % options['timeout']
+            m = "Connect timed out (limit of %d seconds)" % options['timeout']
+            raven.captureException(m)
+            return m
         except requests.exceptions.ConnectionError as exc:
+            raven.captureException("Unable to connect")
             return "Unable to connect. Exception: %r" % exc
