@@ -16,6 +16,12 @@ def ping(r, watchword):
     except Watch.DoesNotExist:
         return HttpResponseBadRequest()
 
+    # Shortcut if the watch is sleeping (we won't do anything)
+    if watch.state == 'sleep':
+        response = HttpResponse("Sleeping")
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
+
     watch.last_ping = timezone.now()
     # We send flares on state changes
     launch_flares = watch.state == 'alarm'
