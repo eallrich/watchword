@@ -27,7 +27,7 @@ python manage.py createsuperuser
 echo "Customizing configuration"
 source secrets
 # Note the single '>' redirect to ensure local configurations start clean
-echo "SECRET_KEY = $(python -c "import base64, os; print base64.b64encode(os.urandom(40))")" > ww/local.py
+echo "SECRET_KEY = '$(python -c "import base64, os; print base64.b64encode(os.urandom(40))")'" > ww/local.py
 echo "EMAIL_AUTHOR = 'watchword@$MAIN_DOMAIN'" >> ww/local.py
 echo "EMAIL_BACKEND = 'django_mailgun.MailgunBackend'" >> ww/local.py
 echo "MAILGUN_ACCESS_KEY = '$MAILGUN_ACCESS_KEY'" >> ww/local.py
