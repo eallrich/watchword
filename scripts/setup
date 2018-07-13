@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# scripts/setup: set up the application environment for the first time
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Creating the virtualenv (using $(python --version))"
+virtualenv .
+echo "export DJANGO_SETTINGS_MODULE=ww.settings" >> bin/activate
+source bin/activate
+
+echo "Installing $(cat requirements.txt.lock | wc -l) python packages"
+pip install -r requirements.txt.lock
+
+echo "Running database migrations"
+python manage.py migrate
+
+echo "Creating the superuser"
+python manage.py createsuperuser
+
+echo "Customizing configuration"
+source secrets
+# Note the single '>' redirect to ensure local configurations start clean
+echo "SECRET_KEY = $(python -c "import base64, os; print base64.b64encode(os.urandom(40))")" > ww/local.py
+echo "EMAIL_AUTHOR = 'watchword@$MAIN_DOMAIN'" >> ww/local.py
+echo "EMAIL_BACKEND = 'django_mailgun.MailgunBackend'" >> ww/local.py
+echo "MAILGUN_ACCESS_KEY = '$MAILGUN_ACCESS_KEY'" >> ww/local.py
+echo "MAILGUN_SERVER_NAME = '$MAILGUN_SERVER_NAME'" >> ww/local.py
+echo "ALLOWED_HOSTS = ['$MAIN_DOMAIN', '$PING_DOMAIN']" >> ww/local.py
+echo "DEBUG = False" >> ww/local.py
+
+echo "Using crontab to send flares for alarms"
+cat etc/crontab.watchword \
+    | sed -e "s@{{ APPLICATION_ROOT }}@$(pwd)@" \
+    | sed -e "s@{{ EXTERNAL_WATCH }}@$EXTERNAL_WATCH@" \
+    | crontab -
