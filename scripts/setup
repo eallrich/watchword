@@ -39,4 +39,4 @@ echo "Using crontab to send flares for alarms"
 cat etc/crontab.watchword \
     | sed -e "s@{{ APPLICATION_ROOT }}@$(pwd)@" \
     | sed -e "s@{{ EXTERNAL_WATCH }}@$EXTERNAL_WATCH@" \
-    | crontab -
+    | crontab -u $(whoami) -
