@@ -7,7 +7,11 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "Creating the virtualenv (using $(python --version))"
-virtualenv .
+if [[ -f bin/activate ]] ; then
+    echo "Virtualenv already exists with $(bin/python --version)"
+else
+    virtualenv .
+fi
 echo "export DJANGO_SETTINGS_MODULE=ww.settings" >> bin/activate
 source bin/activate
 
