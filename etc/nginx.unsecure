@@ -1,0 +1,64 @@
+# Nginx config template for unsecured serving of the watchword sites.
+
+# Variables are wrapped in {{ and }}:
+# - `site_root` is the absolute path to the root of the application
+# - `main_domain` is the primary domain for interacting with watchword
+# - `ping_domain` is the alias domain for reporting pings
+
+upstream gunicorn {
+    server unix:{{ site_root }}/sock/gunicorn;
+}
+
+server {
+    listen 80;
+    server_name {{ main_domain }};
+    access_log /var/log/nginx/{{ main_domain }}.access.log;
+    error_log /var/log/nginx/{{ main_domain }}.error.log;
+
+    # Let's Encrypt challenges are served directly
+    location /.well-known/acme-challenge/ {
+        alias /etc/letsencrypt/challenges/;
+        try_files $uri =404;
+    }
+    
+    try_files $uri @gunicorn;
+    
+    location @gunicorn {
+        proxy_pass http://gunicorn;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Request-Start "t=${msec}";
+    }
+}
+
+server {
+    listen 80;
+    server_name {{ ping_domain }};
+    access_log /var/log/nginx/{{ ping_domain }}.access.log;
+    error_log /var/log/nginx/{{ ping_domain }}.error.log;
+
+    # Let's Encrypt challenges are served directly
+    location /.well-known/acme-challenge/ {
+        alias /etc/letsencrypt/challenges/;
+        try_files $uri =404;
+    }
+
+    # We'll send along requests which appear to be pings (and since Django's
+    # URL processing will expect the /ping/ prefix, add that on first).
+    rewrite "^/([0-9a-fA-F]{10})$" /ping/$1 last;
+    location ~ "^/ping/[0-9a-fA-F]{10}$" {
+        proxy_pass http://gunicorn;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Request-Start "t=${msec}";
+    }
+
+    # Catch everything else and ignore it
+    location / {
+        return 444;
+    }
+}
