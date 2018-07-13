@@ -6,9 +6,9 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "Creating the virtualenv (using $(python --version))"
+echo "Creating the virtualenv (using $(python --version 2>&1))"
 if [[ -f bin/activate ]] ; then
-    echo "Virtualenv already exists with $(bin/python --version)"
+    echo "Virtualenv already exists with $(bin/python --version 2>&1)"
 else
     virtualenv .
 fi
