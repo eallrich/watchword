@@ -15,10 +15,7 @@ server {
 
     # To support Let's Encrypt challenges, we need to serve challenge files on
     # HTTP port 80. For everything else, we want to require HTTPS port 443.
-    location /.well-known/acme-challenge/ {
-        alias /etc/letsencrypt/challenges/;
-        try_files $uri =404;
-    }
+    include shared_letsencrypt.conf;
 
     location / {
         return 301 https://$server_name$request_uri;
@@ -80,10 +77,7 @@ server {
     access_log /var/log/nginx/{{ ping_domain }}.access.tls.log ssl;
 
     # Let's Encrypt challenges are served directly
-    location /.well-known/acme-challenge/ {
-        alias /etc/letsencrypt/challenges/;
-        try_files $uri =404;
-    }
+    include shared_letsencrypt.conf;
 
     # We'll send along requests which appear to be pings (and since Django's
     # URL processing will expect the /ping/ prefix, add that on first).
