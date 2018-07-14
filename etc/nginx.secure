@@ -39,8 +39,6 @@ server {
 
     access_log /var/log/nginx/{{ main_domain }}.access.log;
     error_log /var/log/nginx/{{ main_domain }}.error.log;
-    # TLS connection information
-    log_format ssl "$time_local $server_name $remote_addr $connection $connection_requests $ssl_protocol $ssl_cipher $ssl_session_id";
     access_log /var/log/nginx/{{ main_domain }}.access.tls.log ssl;
 
     try_files $uri @gunicorn;
