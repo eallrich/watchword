@@ -22,6 +22,9 @@ test -d $SOCKET_DIRECTORY || mkdir -p $SOCKET_DIRECTORY
 echo "Loading virtualenv"
 source bin/activate
 
+echo "Collecting static files"
+python manage.py collectstatic --noinput
+
 echo "Starting gunicorn"
 # Using exec because the shell script doesn't need to keep running on its own
 # after starting gunicorn.
