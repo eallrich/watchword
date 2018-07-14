@@ -3,6 +3,7 @@
 # scripts/setup: set up the application environment for the first time
 
 set -e
+set -o pipefail
 
 cd "$(dirname "$0")/.."
 
