@@ -7,14 +7,14 @@ set -o pipefail
 
 cd "$(dirname "$0")/.."
 
-if [[ -f bin/activate ]] ; then
-    echo "Virtualenv already exists with $(bin/python --version 2>&1)"
+if [[ -f env/bin/activate ]] ; then
+    echo "Virtualenv already exists with $(env/bin/python --version 2>&1)"
 else
-    echo "Creating the virtualenv (using $(python --version 2>&1))"
-    virtualenv .
+    echo "Creating the virtualenv (using $(python3 --version 2>&1))"
+    python3 -m venv env
 fi
-echo "export DJANGO_SETTINGS_MODULE=ww.settings" >> bin/activate
-source bin/activate
+echo "export DJANGO_SETTINGS_MODULE=ww.settings" >> env/bin/activate
+source env/bin/activate
 
 echo "Installing $(cat requirements.txt.lock | wc -l) python packages"
 pip install -r requirements.txt.lock
@@ -22,11 +22,16 @@ pip install -r requirements.txt.lock
 echo "Customizing configuration"
 source secrets
 # Note the single '>' redirect to ensure local configurations start clean
-echo "SECRET_KEY = '$(python -c "import base64, os; print base64.b64encode(os.urandom(40))")'" > ww/local.py
-echo "EMAIL_AUTHOR = 'watchword@$MAIN_DOMAIN'" >> ww/local.py
-echo "EMAIL_BACKEND = 'django_mailgun.MailgunBackend'" >> ww/local.py
-echo "MAILGUN_ACCESS_KEY = '$MAILGUN_ACCESS_KEY'" >> ww/local.py
-echo "MAILGUN_SERVER_NAME = '$MAILGUN_SERVER_NAME'" >> ww/local.py
+echo "SECRET_KEY = '$(python -c "import secrets; print(secrets.token_urlsafe())")'" > ww/local.py
+echo "DEFAULT_FROM_EMAIL = 'watchword@$MAIN_DOMAIN'" >> ww/local.py
+echo "SERVER_EMAIL = 'django@$MAIN_DOMAIN'" >> ww/local.py
+echo "EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'" >> ww/local.py
+cat << EOF >> ww/local.py
+ANYMAIL = {
+    "MAILGUN_API_KEY": "$MAILGUN_API_KEY",
+    "MAILGUN_SENDER_DOMAIN": "$MAILGUN_SENDER_DOMAIN",
+}
+EOF
 echo "ALLOWED_HOSTS = ['$MAIN_DOMAIN', '$PING_DOMAIN']" >> ww/local.py
 echo "DEBUG = False" >> ww/local.py
 

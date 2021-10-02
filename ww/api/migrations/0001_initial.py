@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 import datetime
 import ww.api.models
 from django.conf import settings
@@ -40,7 +41,7 @@ class Migration(migrations.Migration):
                 ('grace', models.DurationField(default=datetime.timedelta(0, 3600))),
                 ('state', models.CharField(default=b'fresh', max_length=5, choices=[(b'fresh', b'Fresh'), (b'quiet', b'Quiet'), (b'alert', b'Alert'), (b'alarm', b'Alarm'), (b'sleep', b'Sleep')])),
                 ('last_ping', models.DateTimeField(null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -49,6 +50,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ping',
             name='watch',
-            field=models.ForeignKey(to='api.Watch'),
+            field=models.ForeignKey(to='api.Watch', on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

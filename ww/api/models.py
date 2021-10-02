@@ -46,7 +46,7 @@ class Timestamped(models.Model):
 
 
 class Watch(Timestamped):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     word = models.CharField(max_length=10, default=watchword, editable=False, unique=True)
     cycle = models.DurationField(default=timedelta(days=1))
@@ -94,7 +94,7 @@ class Watch(Timestamped):
 
 
 class Ping(Timestamped):
-    watch = models.ForeignKey(Watch)
+    watch = models.ForeignKey(Watch, on_delete=models.CASCADE)
     method = models.CharField(max_length=10, blank=True)
     user_agent = models.CharField(max_length=255, blank=True)
     remote_addr = models.GenericIPAddressField()
@@ -106,7 +106,7 @@ class Ping(Timestamped):
 
 
 class Flare(Timestamped):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     config = models.CharField(max_length=255, blank=True)
     signal = models.CharField(max_length=10, choices=FLARE_SIGNALS, default="email", blank=False)
 
@@ -132,8 +132,8 @@ class Flare(Timestamped):
 
 
 class Launch(Timestamped):
-    watch = models.ForeignKey(Watch)
-    flare = models.ForeignKey(Flare)
+    watch = models.ForeignKey(Watch, on_delete=models.CASCADE)
+    flare = models.ForeignKey(Flare, on_delete=models.CASCADE)
     message = models.CharField(max_length=255, blank=True)
     trigger_state = models.CharField(max_length=5, choices=WATCH_STATES)
 

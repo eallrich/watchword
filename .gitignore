@@ -2,13 +2,12 @@
 *.swp
 
 # Virtualenv
-bin/
-include/
-lib/
-local/
+env/
 
 # Local files
 watchword.sqlite3
 ww/local.py
 /static/
 sock/
+cron.log
+secrets

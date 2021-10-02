@@ -6,7 +6,7 @@ import requests
 
 
 class Email(object):
-    def send(self, flare, watch, from_email=settings.EMAIL_AUTHOR):
+    def send(self, flare, watch, from_email=None):
         parameters = {
             'subject': 'Flare from Watchword: %s status is "%s"' % (watch.name, watch.status()),
             'message': 'The Watch for %s (word=%s) was last contacted %s (at precisely %s). The Watch status is %s.' % (watch.name, watch.word, naturaltime(watch.last_ping), watch.last_ping, watch.status()),
