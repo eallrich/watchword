@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 from django.conf import settings
 
 
@@ -21,7 +22,7 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('config', models.CharField(max_length=255, blank=True)),
                 ('signal', models.CharField(default=b'email', max_length=10, choices=[(b'email', b'Email'), (b'webhook', b'Webhook')])),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -35,8 +36,8 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('message', models.CharField(max_length=255, blank=True)),
                 ('trigger_state', models.CharField(max_length=5, choices=[(b'fresh', b'Fresh'), (b'quiet', b'Quiet'), (b'alert', b'Alert'), (b'alarm', b'Alarm'), (b'sleep', b'Sleep')])),
-                ('flare', models.ForeignKey(to='api.Flare')),
-                ('watch', models.ForeignKey(to='api.Watch')),
+                ('flare', models.ForeignKey(to='api.Flare', on_delete=django.db.models.deletion.CASCADE)),
+                ('watch', models.ForeignKey(to='api.Watch', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'abstract': False,
