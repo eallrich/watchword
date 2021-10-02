@@ -29,7 +29,7 @@ echo "EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'" >> ww/local.py
 cat << EOF >> ww/local.py
 ANYMAIL = {
     "MAILGUN_API_KEY": "$MAILGUN_API_KEY",
-    "MAILGUN_SENDER_DOMAIN": "$MAILGUN_SERVER_NAME",
+    "MAILGUN_SENDER_DOMAIN": "$MAILGUN_SENDER_DOMAIN",
 }
 EOF
 echo "ALLOWED_HOSTS = ['$MAIN_DOMAIN', '$PING_DOMAIN']" >> ww/local.py
