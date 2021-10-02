@@ -20,7 +20,7 @@ echo "Operating in $SITE_ROOT, socket will be at $SOCKET"
 test -d $SOCKET_DIRECTORY || mkdir -p $SOCKET_DIRECTORY
 
 echo "Loading virtualenv"
-source bin/activate
+source env/bin/activate
 
 echo "Collecting static files"
 python manage.py collectstatic --noinput
