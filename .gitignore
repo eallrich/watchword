@@ -9,3 +9,5 @@ watchword.sqlite3
 ww/local.py
 /static/
 sock/
+cron.log
+secrets
