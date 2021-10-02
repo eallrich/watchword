@@ -2,10 +2,7 @@
 *.swp
 
 # Virtualenv
-bin/
-include/
-lib/
-local/
+env/
 
 # Local files
 watchword.sqlite3
