@@ -22,7 +22,7 @@ pip install -r requirements.txt.lock
 echo "Customizing configuration"
 source secrets
 # Note the single '>' redirect to ensure local configurations start clean
-echo "SECRET_KEY = '$(python -c "import base64, os; print base64.b64encode(os.urandom(40))")'" > ww/local.py
+echo "SECRET_KEY = '$(python -c "import secrets; print(secrets.token_urlsafe())")'" > ww/local.py
 echo "DEFAULT_FROM_EMAIL = 'watchword@$MAIN_DOMAIN'" >> ww/local.py
 echo "SERVER_EMAIL = 'django@$MAIN_DOMAIN'" >> ww/local.py
 echo "EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'" >> ww/local.py
