@@ -44,11 +44,12 @@ python manage.py createsuperuser
 if [[ $(whoami) == 'watchword' ]]; then
   echo "Using crontab to send flares for alarms"
   cat etc/crontab.watchword \
-      | sed -e "s@{{ APPLICATION_ROOT }}@$(pwd)@" \
-      | sed -e "s@{{ EXTERNAL_WATCH }}@$EXTERNAL_WATCH@" \
-      | crontab -u $(whoami) -
+    | sed -e "s@{{ APPLICATION_ROOT }}@$(pwd)@" \
+    | sed -e "s@{{ EXTERNAL_WATCH }}@$EXTERNAL_WATCH@" \
+    | crontab -u $(whoami) -
 else
-  echo "user=$(whoami) does not appear to be a watchword-dedicated"
-  echo "user. In case there's an active crontab this script won't be"
-  echo "installing the cron schedule to send flares for alarms."
+  echo "user=$(whoami) does not appear to be a watchword-dedicated user."
+  echo "In case there's an active crontab this script won't be installing"
+  echo "the cron schedule to send flares for alarms. Instead run this when ready:"
+  echo "    env/bin/python manage.py fireflares"
 fi
